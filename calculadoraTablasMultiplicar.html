@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tablas Divertidas 🐵🦁🦉</title>
+  <style>
+    body {
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      background: linear-gradient(to top right, #ffe29f, #ffa99f);
+      text-align: center;
+      padding: 20px;
+      color: #333;
+    }
+
+    h1 {
+      font-size: 2.5em;
+      margin-bottom: 10px;
+    }
+
+    .animal-banner {
+      font-size: 2em;
+      margin-bottom: 10px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 20px;
+      padding: 30px;
+      max-width: 400px;
+      margin: auto;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+    }
+
+    .question {
+      font-size: 1.8em;
+      margin: 20px 0;
+    }
+
+    input[type="number"] {
+      font-size: 1.5em;
+      padding: 10px;
+      width: 80px;
+      text-align: center;
+      border-radius: 10px;
+      border: 2px solid #ffa500;
+    }
+
+    button {
+      font-size: 1.2em;
+      padding: 10px 20px;
+      background: #ffb347;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      margin-top: 15px;
+    }
+
+    button:hover {
+      background: #ff9800;
+    }
+
+    .score {
+      margin-top: 20px;
+      font-size: 1.2em;
+      color: #2e7d32;
+    }
+
+    .result {
+      margin-top: 10px;
+      font-size: 1.1em;
+      font-weight: bold;
+    }
+
+    .end-message {
+      font-size: 1.5em;
+      color: #d32f2f;
+      margin-top: 20px;
+    }
+
+    .celebration {
+      font-size: 2em;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="animal-banner">🐶 🐱 🐵 🦁 🐰 🦊 🐻 🐯 🐼</div>
+  <h1>Tablas Divertidas</h1>
+
+  <div class="card">
+    <div id="question" class="question">¿Cuánto es 3 x 4?</div>
+    <input type="number" id="answerInput" />
+    <br />
+    <button onclick="checkAnswer()">Responder</button>
+
+    <div class="result" id="result"></div>
+    <div class="score" id="score">Puntos: 0</div>
+    <div class="end-message" id="endMessage"></div>
+    <div class="celebration" id="celebration"></div>
+  </div>
+
+  <script>
+    let puntos = 0;
+    let num1, num2;
+
+    function generarPregunta() {
+      num1 = Math.floor(Math.random() * 10); // 0 a 9
+      num2 = Math.floor(Math.random() * 10);
+      document.getElementById("question").innerText = `¿Cuánto es ${num1} x ${num2}?`;
+      document.getElementById("answerInput").value = '';
+      document.getElementById("result").innerText = '';
+    }
+
+    function checkAnswer() {
+      const respuesta = parseInt(document.getElementById("answerInput").value);
+      const resultado = num1 * num2;
+      if (respuesta === resultado) {
+        puntos += 3;
+        document.getElementById("result").innerText = "¡Correcto! 🥳";
+        document.getElementById("score").innerText = `Puntos: ${puntos}`;
+        if (puntos >= 30) {
+          document.getElementById("endMessage").innerText = "¡Felicidades! Has completado el juego 🎉";
+          document.getElementById("celebration").innerText = "🐸 🐵 🐶 🦁 🎈 🎉";
+          document.querySelector("button").disabled = true;
+          return;
+        }
+        setTimeout(generarPregunta, 1000);
+      } else {
+        document.getElementById("result").innerText = "Ups... Intenta de nuevo 🐢";
+      }
+    }
+
+    // Inicializar
+    generarPregunta();
+  </script>
+
+</body>
+</html>
