@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Tablas Divertidas 🐵🦁🦉</title>
   <style>
     body {
@@ -82,6 +82,23 @@
       font-size: 2em;
       margin-top: 10px;
     }
+
+    .top-scores {
+      margin-top: 20px;
+      font-size: 1em;
+      text-align: left;
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+      background: #fff8dc;
+      padding: 10px;
+      border-radius: 15px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    }
+
+    .hidden {
+      display: none;
+    }
   </style>
 </head>
 <body>
@@ -93,20 +110,22 @@
     <div id="question" class="question">¿Cuánto es 3 x 4?</div>
     <input type="number" id="answerInput" />
     <br />
-    <button onclick="checkAnswer()">Responder</button>
-
+    <button onclick="checkAnswer()" id="answerBtn">Responder</button>
     <div class="result" id="result"></div>
     <div class="score" id="score">Puntos: 0</div>
     <div class="end-message" id="endMessage"></div>
     <div class="celebration" id="celebration"></div>
+    <button class="hidden" id="restartBtn" onclick="reiniciarJuego()">🔄 Reiniciar Juego</button>
   </div>
+
+  <div id="topScores" class="top-scores hidden"></div>
 
   <script>
     let puntos = 0;
     let num1, num2;
 
     function generarPregunta() {
-      num1 = Math.floor(Math.random() * 10); // 0 a 9
+      num1 = Math.floor(Math.random() * 10);
       num2 = Math.floor(Math.random() * 10);
       document.getElementById("question").innerText = `¿Cuánto es ${num1} x ${num2}?`;
       document.getElementById("answerInput").value = '';
@@ -121,9 +140,7 @@
         document.getElementById("result").innerText = "¡Correcto! 🥳";
         document.getElementById("score").innerText = `Puntos: ${puntos}`;
         if (puntos >= 30) {
-          document.getElementById("endMessage").innerText = "¡Felicidades! Has completado el juego 🎉";
-          document.getElementById("celebration").innerText = "🐸 🐵 🐶 🦁 🎈 🎉";
-          document.querySelector("button").disabled = true;
+          finalizarJuego();
           return;
         }
         setTimeout(generarPregunta, 1000);
@@ -132,9 +149,53 @@
       }
     }
 
-    // Inicializar
+    function finalizarJuego() {
+      document.getElementById("endMessage").innerText = "¡Felicidades! Has completado el juego 🎉";
+      document.getElementById("celebration").innerText = "🐸 🐵 🐶 🦁 🎈 🎉";
+      document.getElementById("answerBtn").disabled = true;
+      document.getElementById("restartBtn").classList.remove("hidden");
+
+      const nombre = prompt("¡Escribe tu nombre para guardar tu puntuación!");
+      if (nombre) {
+        guardarPuntaje(nombre, puntos);
+      }
+
+      mostrarTop();
+    }
+
+    function reiniciarJuego() {
+      puntos = 0;
+      document.getElementById("score").innerText = `Puntos: ${puntos}`;
+      document.getElementById("result").innerText = '';
+      document.getElementById("endMessage").innerText = '';
+      document.getElementById("celebration").innerText = '';
+      document.getElementById("restartBtn").classList.add("hidden");
+      document.getElementById("answerBtn").disabled = false;
+      document.getElementById("topScores").classList.add("hidden");
+      generarPregunta();
+    }
+
+    function guardarPuntaje(nombre, puntos) {
+      const historial = JSON.parse(localStorage.getItem("puntajes") || "[]");
+      historial.push({ nombre, puntos, fecha: new Date().toISOString() });
+      localStorage.setItem("puntajes", JSON.stringify(historial));
+    }
+
+    function mostrarTop() {
+      const historial = JSON.parse(localStorage.getItem("puntajes") || "[]");
+      const top5 = historial.sort((a, b) => b.puntos - a.puntos).slice(0, 5);
+      let html = "<h3>🏆 Top 5 Jugadores</h3><ol>";
+      top5.forEach(j => {
+        html += `<li>${j.nombre} - ${j.puntos} puntos</li>`;
+      });
+      html += "</ol>";
+      const topDiv = document.getElementById("topScores");
+      topDiv.innerHTML = html;
+      topDiv.classList.remove("hidden");
+    }
+
+    // Iniciar juego
     generarPregunta();
   </script>
-
 </body>
 </html>
