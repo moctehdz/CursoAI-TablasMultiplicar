@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Tablas Divertidas 🐵🦁🦉</title>
+  <title>Tablas Divertidas 🐵🦁</title>
   <style>
     body {
       font-family: 'Comic Sans MS', cursive, sans-serif;
@@ -99,6 +99,11 @@
     .hidden {
       display: none;
     }
+
+    .animal-select {
+      font-size: 1.2em;
+      margin-top: 10px;
+    }
   </style>
 </head>
 <body>
@@ -123,6 +128,8 @@
   <script>
     let puntos = 0;
     let num1, num2;
+
+    const animales = ["🐶", "🐱", "🐭", "🐹", "🐰", "🦊", "🐻", "🐼", "🐨", "🐯", "🦁", "🐮", "🐷", "🐸", "🐵", "🦉", "🦄", "🐔", "🐧", "🦓", "🦒", "🦔", "🦘", "🐢", "🐙"];
 
     function generarPregunta() {
       num1 = Math.floor(Math.random() * 10);
@@ -155,9 +162,10 @@
       document.getElementById("answerBtn").disabled = true;
       document.getElementById("restartBtn").classList.remove("hidden");
 
-      const nombre = prompt("¡Escribe tu nombre para guardar tu puntuación!");
+      const nombre = prompt("Escribe tu nombre:");
       if (nombre) {
-        guardarPuntaje(nombre, puntos);
+        const animal = prompt("Elige tu animal (copia uno de estos):\n" + animales.join(" "));
+        guardarPuntaje(nombre.trim(), puntos, animal || "🐵");
       }
 
       mostrarTop();
@@ -175,26 +183,36 @@
       generarPregunta();
     }
 
-    function guardarPuntaje(nombre, puntos) {
-      const historial = JSON.parse(localStorage.getItem("puntajes") || "[]");
-      historial.push({ nombre, puntos, fecha: new Date().toISOString() });
-      localStorage.setItem("puntajes", JSON.stringify(historial));
+    function guardarPuntaje(nombre, puntos, animal) {
+      let jugadores = JSON.parse(localStorage.getItem("jugadores") || "[]");
+      const existente = jugadores.find(j => j.nombre.toLowerCase() === nombre.toLowerCase());
+
+      if (existente) {
+        existente.puntos += puntos;
+        if (animal) existente.animal = animal;
+      } else {
+        jugadores.push({ nombre, puntos, animal });
+      }
+
+      localStorage.setItem("jugadores", JSON.stringify(jugadores));
     }
 
     function mostrarTop() {
-      const historial = JSON.parse(localStorage.getItem("puntajes") || "[]");
-      const top5 = historial.sort((a, b) => b.puntos - a.puntos).slice(0, 5);
-      let html = "<h3>🏆 Top 5 Jugadores</h3><ol>";
+      const jugadores = JSON.parse(localStorage.getItem("jugadores") || "[]");
+      const top5 = jugadores.sort((a, b) => b.puntos - a.puntos).slice(0, 5);
+
+      let html = "<h3>🏆 Top 5 Acumulado</h3><ol>";
       top5.forEach(j => {
-        html += `<li>${j.nombre} - ${j.puntos} puntos</li>`;
+        html += `<li>${j.animal} ${j.nombre} - ${j.puntos} pts</li>`;
       });
       html += "</ol>";
+
       const topDiv = document.getElementById("topScores");
       topDiv.innerHTML = html;
       topDiv.classList.remove("hidden");
     }
 
-    // Iniciar juego
+    // Iniciar
     generarPregunta();
   </script>
 </body>
